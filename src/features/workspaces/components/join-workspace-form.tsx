@@ -70,6 +70,7 @@ export const JoinWorkspaceForm = ({
                     size="lg"
                     className="w-full lg:w-fit"
                     type="button"
+                    disabled={isPending}
                     onClick={onSubmit}
                     >
                         Join Workspace

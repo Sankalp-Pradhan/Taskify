@@ -2,14 +2,12 @@ import { createAdminClient } from "@/lib/appwrite";
 import { sessionMiddleware } from "@/lib/session-middleware";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { z } from "zod";
+import { nativeEnum, z } from "zod";
 import { getMember } from "../utils";
 import { DATABASE_ID, MEMBERS_ID } from "@/config";
 import { Query } from "node-appwrite";
 import { error } from "console";
 import { MemberRole } from "../types";
-import { nativeEnum } from "zod/v3";
-import { Database } from "lucide-react";
 
 const app = new Hono()
     .get(
