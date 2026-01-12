@@ -108,7 +108,7 @@ export const EditWorkspaceForm = ({ onCancel, initialValues }: EditWorkspaceForm
         }, {
             onSuccess: ({ data }) => {
                 form.reset()
-                router.push(`/workspaces/${data.$id}`)
+                router.push(`/workspaces/${data.$id}`) // building project setting 25:01
             }
         })
     }

@@ -6,7 +6,9 @@ import { ID, Query } from "node-appwrite";
 
 import { Hono } from "hono";
 import { DATABASE_ID, IMAGES_BUCKET_ID, MEMBERS_ID, PROJECTS_ID, WORKSPACES_ID } from "@/config";
-import { createProjectSchema } from "../schemas";
+import { createProjectSchema, updateProjectSchema } from "../schemas";
+import { MemberRole } from "@/features/members/types";
+import { Project } from "../types";
 
 
 
@@ -99,6 +101,64 @@ const app = new Hono()
             )
             return c.json({ data: projects })
 
+        }
+    )
+    .patch(
+        "/:projectId",
+        zValidator("form", updateProjectSchema),
+        sessionMiddleware,
+        async (c) => {
+            const databases = c.get("databases");
+            const storage = c.get("storage");
+            const user = c.get("user");
+
+            const { projectId } = c.req.param();
+            const { name, image } = c.req.valid("form");
+
+            const existingProject = await databases.getDocument<Project>(
+                DATABASE_ID,
+                PROJECTS_ID,
+                projectId
+            )
+
+            const member = await getMember({
+                databases,
+                workspaceId: existingProject.workspaceId,
+                userId: user.$id,
+            });
+
+            if (!member) {
+                return c.json({ error: "Unauthorized" }, 401);
+            }
+
+            let uploadImageUrl: string | undefined;
+
+            if (image instanceof File) {
+                const file = await storage.createFile(
+                    IMAGES_BUCKET_ID,
+                    ID.unique(),
+                    image,
+                )
+
+                const arrayBuffer = await storage.getFileView(
+                    IMAGES_BUCKET_ID,
+                    file.$id,
+                );
+                uploadImageUrl = `data:image/png;base64,${Buffer.from(arrayBuffer).toString("base64")}`
+            } else {
+                uploadImageUrl = image;
+            }
+
+            const project = await databases.updateDocument(
+                DATABASE_ID,
+                PROJECTS_ID,
+                projectId,
+                {
+                    name,
+                    imageUrl: uploadImageUrl,
+                }
+            );
+            return c.json({ data: project });
         }
     )
 
