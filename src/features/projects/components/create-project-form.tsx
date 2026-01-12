@@ -32,6 +32,7 @@ import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 interface CreateProjectFormProps {
     onCancel?: () => void;
 }
+const formSchema = createProjectSchema.omit({ workspaceId: true });
 
 export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
     const workspaceId = useWorkspaceId();
@@ -41,34 +42,53 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
     const inputRef = useRef<HTMLInputElement>(null)
 
 
-    const form = useForm<z.infer<typeof createProjectSchema>>({
-        resolver: zodResolver(createProjectSchema.omit({workspaceId : true})),
+    // const form = useForm<z.infer<typeof createProjectSchema>>({
+    //     resolver: zodResolver(createProjectSchema.omit({ workspaceId: true })),
+    //     defaultValues: {
+    //         name: "",
+    //     },
+    // })
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
         },
-    })
+    });
+    // const onSubmit = (values: z.infer<typeof createProjectSchema>) => {
+    //     const finalValues = {
+    //         ...values,
+    //         workspaceId,
+    //         image: values.image instanceof File ? values.image : "",
+    //     };
 
-    const onSubmit = (values: z.infer<typeof createProjectSchema>) => {
+    //     mutate({ form: finalValues }, {
+    //         onSuccess: () => {
+    //             form.reset()
+
+    //         }
+    //     })
+    // }
+
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
         const finalValues = {
             ...values,
-            workspaceId,
+            workspaceId, // workspaceId is added here, not from the form state
             image: values.image instanceof File ? values.image : "",
         };
 
         mutate({ form: finalValues }, {
             onSuccess: () => {
-                form.reset()
-
+                form.reset();
             }
-        })
-    }
-
+        });
+    };
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             form.setValue("image", file)
         }
     };
+
 
     return (
 

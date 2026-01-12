@@ -6,12 +6,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 
-type ResponseType = InferResponseType<typeof client.api.projects["$post"], 200>
-type RequestType = InferRequestType<typeof client.api.projects["$post"]>
 
-export const useCreateProject = () => {
+type ResponseType = InferResponseType<typeof client.api.projects[":projectId"]["$delete"], 200>
+type RequestType = InferRequestType<typeof client.api.projects[":projectId"]["$delete"]>
 
+export const usedeleteProject = () => {
     const router = useRouter();
+
     const queryClient = useQueryClient();
 
     const mutation = useMutation<
@@ -19,23 +20,24 @@ export const useCreateProject = () => {
         Error,
         RequestType
     >({
-        mutationFn: async ({ form }) => {
-            const response = await client.api.projects["$post"]({ form });//     ({json})
+        mutationFn: async ({ param }) => {
+            const response = await client.api.projects[":projectId"]["$delete"]({ param });//     ({json})
 
             if (!response.ok) {
-                throw new Error("Failed to create project");
+                throw new Error("Failed to delete project");
             }
 
             return await response.json();
         },
 
-        onSuccess: ({data}) => {
-            toast.success("Project created");
-            router.push(`/workspaces/${data.workspaceId}/projects/${data.$id}`);
+        onSuccess: ({ data }) => {
+            toast.success("Project deleted");
+            router.refresh();
             queryClient.invalidateQueries({ queryKey: ["projects"] })
+            queryClient.invalidateQueries({ queryKey: ["projects", data.$id] })
         },
         onError: () => {
-            toast.error("Failed to create project");
+            toast.error("Failed to update project");
         }
     });
 
