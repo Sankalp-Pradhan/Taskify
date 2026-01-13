@@ -8,7 +8,7 @@ import { sessionMiddleware } from "@/lib/session-middleware";
 import { zValidator } from "@hono/zod-validator";
 
 
-import { createTasksSchema } from "../components/schema";
+import { createTasksSchema } from "../schema";
 
 import { getMember } from "@/features/members/utils";
 import { TaskStatus } from "../types";

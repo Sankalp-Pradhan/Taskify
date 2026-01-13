@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { TaskStatus } from "../types";
+import { TaskStatus } from "./types";
 
 export const createTasksSchema = z.object({
     name: z.string().min(1, "Required"),
-    status: z.nativeEnum(TaskStatus),
+    status: z.enum(TaskStatus),
     workspaceId: z.string().min(1, "Required"),
     projectId: z.string().min(1, "Required"),
-    dueDate: z.coerce.date(),
+    dueDate: z.date(),
     assigneeId: z.string().trim().min(1, "Required"),
     description : z.string().optional()
 })
