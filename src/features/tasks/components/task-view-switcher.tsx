@@ -6,10 +6,18 @@ import { Button } from "@/components/ui/button"
 import { DottedSeperator } from "@/components/dotted-seperator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id"
+
 import { useCreateTaskModal } from "../hooks/use-create-task-modal"
+import { useGetTask } from "../api/use-get-task"
 
 export const TaskViewSwitcher = () => {
+    const workspaceId = useWorkspaceId();
     const { open } = useCreateTaskModal();
+
+    const { data: tasks, isLoading: isLoadingTasks  , error} = useGetTask({ workspaceId });
+
+
     return (
         <Tabs className="flex-1 w-full border rounded-lg">
             <div className="h-full flex flex-col overflow auto p-4 ">
@@ -30,7 +38,7 @@ export const TaskViewSwitcher = () => {
                         </TabsTrigger>
                         <TabsTrigger
                             className="h-8 w-full lg:w-auto"
-                            value="Calender"
+                            value="calender"
                         >
                             Calender
                         </TabsTrigger>
@@ -50,7 +58,7 @@ export const TaskViewSwitcher = () => {
                 <DottedSeperator className="my-4" />
                 <>
                     <TabsContent value="table" className="mt-0">
-                        Table
+                        {JSON.stringify(tasks)}
                     </TabsContent>
                     <TabsContent value="kanban" className="mt-0">
                         Kanban

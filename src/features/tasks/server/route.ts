@@ -102,14 +102,25 @@ const app = new Hono()
 
             const assignees = await Promise.all(
                 members.documents.map(async (member) => {
-                    const user = await users.get(member.userId);
-                    return {
-                        ...member,
-                        name: user.name,
-                        email: user.email,
+                    try {
+                        const user = await users.get(member.userId);
+                        return {
+                            ...member,
+                            name: user.name,
+                            email: user.email,
+                        };
+                    } catch (error) {
+                        // Log the error for debugging, but don't crash the API
+                        console.error(`User fetch failed for userId: ${member.userId}`, error);
+
+                        return {
+                            ...member,
+                            name: "Unknown User", // Fallback name
+                            email: "deleted@user.com", // Fallback email
+                        };
                     }
                 }),
-            )
+            );
 
             const populatedTasks = tasks.documents.map((task) => {
                 const project = projects.documents.find(
