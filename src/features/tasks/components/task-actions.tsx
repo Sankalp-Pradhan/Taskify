@@ -7,9 +7,32 @@ interface TaskActionsProps {
     children: React.ReactNode;
 }
 
+import { useDeleteTask } from "../api/use-delete-task";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useRouter } from "next/router";
+
 export const TaskActions = ({ id, projectId, children }: TaskActionsProps) => {
+    const router = useRouter();
+    const [ConfirmDialog, confirm] = useConfirm(
+        "Delete Task",
+        "This action cannot be undone.",
+        "destructive",
+    )
+
+    const { mutate, isPending } = useDeleteTask();
+
+    const onDelete = async () => {
+        const ok = await confirm();
+        if (!ok) return;
+
+        mutate({ param: { taskId: id } })
+    }
+
+
     return (
+
         <div className="flex justify-end">
+            <ConfirmDialog />
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     {children}
@@ -28,7 +51,6 @@ export const TaskActions = ({ id, projectId, children }: TaskActionsProps) => {
                     <DropdownMenuItem
                         onClick={() => { }}
                         className="font-medium p-[10px]"
-                        disabled={false}
                     >
                         <ExternalLinkIcon className="size-4 mr-2 stroke-2" />
                         Open Project
@@ -36,7 +58,6 @@ export const TaskActions = ({ id, projectId, children }: TaskActionsProps) => {
 
                     <DropdownMenuItem
                         onClick={() => { }}
-                        disabled={false}
                         className="font-medium p-[10px]"
                     >
                         <PencilIcon className="size-4 mr-2 stroke-2" />
@@ -44,8 +65,7 @@ export const TaskActions = ({ id, projectId, children }: TaskActionsProps) => {
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
-                        onClick={() => { }}
-                        disabled={false}
+                        onClick={onDelete}
                         className="font-medium text-amber-700 focus:text-amber-700 p-[10px]"
                     >
                         <TrashIcon className=" size-4 mr-2 stroke-2" />
