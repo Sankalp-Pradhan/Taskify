@@ -21,11 +21,19 @@ import { TaskStatus } from "../types"
 import { useBulkUpdateTasks } from "../api/use-bulk-update-task"
 import { DataCalendar } from "./date-calendar"
 
-export const TaskViewSwitcher = () => {
+interface TaskViewSwitcherProps {
+    hideProjectFilter?: boolean;
+    projectId?: string;
+}
+
+export const TaskViewSwitcher = ({
+    hideProjectFilter,
+    projectId: forcedProjectId }: TaskViewSwitcherProps) => {
+
     const [{
         status,
         assigneeId,
-        projectId,
+        projectId: filterProjectId,
         dueDate,
     }] = useTaskFilters();
 
@@ -34,14 +42,14 @@ export const TaskViewSwitcher = () => {
         defaultValue: "table",
     })
 
-    const { mutate : bulkUpdate } = useBulkUpdateTasks();
+    const { mutate: bulkUpdate } = useBulkUpdateTasks();
 
     const workspaceId = useWorkspaceId();
     const { open } = useCreateTaskModal();
 
     const { data: tasks, isLoading: isLoadingTasks, error } = useGetTasks({
         workspaceId,
-        projectId,
+        projectId: forcedProjectId || filterProjectId,
         status,
         assigneeId,
         dueDate,
@@ -50,9 +58,9 @@ export const TaskViewSwitcher = () => {
     const onKanbanChange = useCallback((
         tasks: { $id: string; status: TaskStatus; position: number }[]
     ) => {
-       bulkUpdate({
-        json : {tasks},
-       })
+        bulkUpdate({
+            json: { tasks },
+        })
     }, [bulkUpdate])
 
 
@@ -99,9 +107,7 @@ export const TaskViewSwitcher = () => {
                 <DottedSeperator className="my-4" />
 
                 <DottedSeperator className="my-4" />
-                <DataFilters />
-
-
+                <DataFilters hideProjectFilter={hideProjectFilter} />
                 <DottedSeperator className="my-4" />
                 {isLoadingTasks ? (
                     <div className="w-full flex flex-col border rounded-lg h-[200px] items-center justify-center">
@@ -116,7 +122,7 @@ export const TaskViewSwitcher = () => {
                             <DataKanban onChange={onKanbanChange} data={tasks?.documents ?? []} />
                         </TabsContent>
                         <TabsContent value="calender" className="h-full pb-4 mt-0">
-                         <DataCalendar data={tasks?.documents ?? []}/>
+                            <DataCalendar data={tasks?.documents ?? []} />
                         </TabsContent>
                     </>
                 )}
