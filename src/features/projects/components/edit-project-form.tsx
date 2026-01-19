@@ -69,7 +69,7 @@ export const EditProjectForm = ({ onCancel, initialValues }: EditProjectFormProp
             param: { projectId: initialValues.$id },
         }, {
             onSuccess: () => {
-                window.location.href = '/workspaces/${initialValues.workspaceId}';
+                window.location.href = `/workspaces/${initialValues.workspaceId}`;
             }
         })
     }
@@ -87,7 +87,7 @@ export const EditProjectForm = ({ onCancel, initialValues }: EditProjectFormProp
         }, {
             onSuccess: ({ data }) => {
                 form.reset()
-                router.push(`/workspaces/${data.$id}`) // building project setting 25:01
+                router.push(`/workspaces/${initialValues.workspaceId}/projects/${data.$id}`) // building project setting 25:01
             }
         })
     }

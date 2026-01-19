@@ -7,9 +7,10 @@ import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { cn } from "@/lib/utils";
 import { useCreateProjecteModal } from "@/features/projects/hooks/use-create-project-modal";
 import { ProjectAvatar } from "@/features/projects/components/project-avatar";
+import { useProjectId } from "@/features/projects/hooks/use-project-id";
 
 export const Projects = () => {
-    const projectId = null;
+    const projectId = useProjectId();
 
     const pathname = usePathname();
     const { open } = useCreateProjecteModal();
@@ -37,7 +38,6 @@ export const Projects = () => {
                             <ProjectAvatar image={project.imageUrl} name={project.name} />
                             <span className="truncate">{project.name}</span>
                         </div>
-
                     </Link>
                 )
             })}

@@ -26,15 +26,19 @@ type AdditionalContext = {
         user: Models.User<Models.Preferences>;
     }
 }
-
 export const sessionMiddleware = createMiddleware<AdditionalContext>(
     async (c, next) => {
         const client = new Client()
             .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
             .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+
         const session = getCookie(c, AUTH_COOKIE);
 
+        // console.log("Session cookie:", session ? "exists" : "missing");
+        // console.log("Cookie name:", AUTH_COOKIE);
+
         if (!session) {
+            console.log("No session cookie found");
             return c.json({ error: "Unauthorized" }, 401)
         }
 
@@ -44,13 +48,19 @@ export const sessionMiddleware = createMiddleware<AdditionalContext>(
         const databases = new Databases(client);
         const storage = new Storage(client);
 
-        const user = await account.get();
+        try {
+            const user = await account.get();
+            console.log("User authenticated:", user.$id);
 
-        c.set("account", account);
-        c.set("databases", databases);
-        c.set("storage", storage);
-        c.set("user", user);
+            c.set("account", account);
+            c.set("databases", databases);
+            c.set("storage", storage);
+            c.set("user", user);
 
-        await next();
+            await next();
+        } catch (error) {
+            console.error("Session validation failed:", error);
+            return c.json({ error: "Unauthorized" }, 401);
+        }
     }
 )

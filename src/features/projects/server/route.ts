@@ -53,7 +53,7 @@ const app = new Hono()
                 {
                     name,
                     imageUrl: uploadImageUrl,
-                    workspaceId 
+                    workspaceId
                 },
             );
 
@@ -77,6 +77,9 @@ const app = new Hono()
             if (!workspaceId) {
                 return c.json({ error: "Missing workspaceId" }, 400)
             }
+            console.log("=== Projects GET Debug ===");
+            console.log("User ID:", user.$id);
+            console.log("Workspace ID:", workspaceId);
 
             const member = await getMember({
                 databases,
@@ -84,6 +87,9 @@ const app = new Hono()
                 userId: user.$id,
 
             })
+            console.log("Member found:", member ? "YES" : "NO");
+            console.log("Member data:", JSON.stringify(member, null, 2));
+
 
             if (!member) {
                 return c.json({ error: "Unauthorized" }, 401)
@@ -178,11 +184,11 @@ const app = new Hono()
 
             const member = await getMember({
                 databases,
-                workspaceId : existingProject.workspaceId,
+                workspaceId: existingProject.workspaceId,
                 userId: user.$id,
             });
 
-            if (!member ) {
+            if (!member) {
                 return c.json({ error: "Unauthorized" }, 401);
             }
 
