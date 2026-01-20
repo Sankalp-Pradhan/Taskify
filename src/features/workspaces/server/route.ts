@@ -9,6 +9,8 @@ import { MemberRole } from "@/features/members/types";
 import { generateInviteCode } from "@/lib/utils";
 import { getMember } from "@/features/members/utils";
 import { Workspace } from "../types";
+import { RiAlarmWarningFill } from "react-icons/ri";
+import { error } from "console";
 
 const app = new Hono()
     // worksapce creation
@@ -38,6 +40,59 @@ const app = new Hono()
         );
         return c.json({ data: workspaces });
     })
+    //workspaceid
+    .get(
+        "/:workspaceId",
+        sessionMiddleware,
+        async (c) => {
+            const user = c.get("user");
+            const databases = c.get("databases")
+            const { workspaceId } = c.req.param();
+
+            const member = await getMember({
+                databases,
+                workspaceId,
+                userId: user.$id,
+            })
+
+            if (!member) {
+                return c.json({ error: "Unauthorized" }, 401)
+
+            }
+
+            const workspace = await databases.getDocument<Workspace>(
+                DATABASE_ID,
+                WORKSPACES_ID,
+                workspaceId
+            )
+
+            return c.json({ data: workspace })
+        }
+    )
+    //workspace info
+    .get(
+        "/:workspaceId/info",
+        sessionMiddleware,
+        async (c) => {
+            const databases = c.get("databases")
+            const { workspaceId } = c.req.param();
+
+            const workspace = await databases.getDocument<Workspace>(
+                DATABASE_ID,
+                WORKSPACES_ID,
+                workspaceId
+            )
+
+            return c.json({
+                data:
+                {
+                    $id: workspaceId,
+                    name: workspace.name,
+                    imageUrl: workspace.imageUrl
+                }
+            })
+        }
+    )
     // image upload
     .post(
         "/",
@@ -206,7 +261,7 @@ const app = new Hono()
 
         }
     )
-    
+
     .post(
         "/:workspaceId/join",
         sessionMiddleware,
@@ -225,7 +280,7 @@ const app = new Hono()
             })
 
             if (member) {
-                return c.json({ error: "Already a Member" },400);
+                return c.json({ error: "Already a Member" }, 400);
             }
 
             const workspace = await databases.getDocument<Workspace>(

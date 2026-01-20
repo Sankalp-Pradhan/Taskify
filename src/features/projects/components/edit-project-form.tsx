@@ -84,12 +84,14 @@ export const EditProjectForm = ({ onCancel, initialValues }: EditProjectFormProp
         mutate({
             form: finalValues,
             param: { projectId: initialValues.$id }
-        }, {
+        },
+         {
             onSuccess: ({ data }) => {
                 form.reset()
                 router.push(`/workspaces/${initialValues.workspaceId}/projects/${data.$id}`) // building project setting 25:01
-            }
-        })
+            } //todo not update
+        }
+    )
     }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
