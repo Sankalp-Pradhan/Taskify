@@ -10,13 +10,13 @@ export async function signUpWithGithub() {
         const { account } = await createAdminClient();
 
         const headersList = await headers();
-        const origin = headersList.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        // const origin = headersList.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
         // createOAuth2Token is correct for node-appwrite (server-side)
         const redirectUrl = await account.createOAuth2Token(
             OAuthProvider.Github,
-            `${origin}/oauth`, // Success callback
-            `${origin}/sign-up`, // Failure callback
+            `${process.env.NEXT_PUBLIC_APP}/oauth`, // Success callback
+            `${process.env.NEXT_PUBLIC_APP}/sign-up`, // Failure callback
         );
 
         return redirect(redirectUrl);

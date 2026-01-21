@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
     const userId = request.nextUrl.searchParams.get("userId");
     const secret = request.nextUrl.searchParams.get("secret");
 
+    const origin = process.env.NEXT_PUBLIC_APP;
+
     if (!userId || !secret) {
         return NextResponse.redirect(
             `${request.nextUrl.origin}/sign-up?error=missing_oauth_params`
