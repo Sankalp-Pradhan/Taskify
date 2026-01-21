@@ -49,7 +49,7 @@ export const TaskViewSwitcher = ({
     const paramProjectId = useProjectId();
     const { open } = useCreateTaskModal();
 
-    const { data: tasks, isLoading: isLoadingTasks, error } = useGetTasks({
+    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks({
         workspaceId,
         projectId: paramProjectId || projectId ,
         status,

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { email, registry, z } from "zod";
+import {  z } from "zod";
 import { ID, Query } from "node-appwrite";
 
 
@@ -14,8 +14,6 @@ import { getMember } from "@/features/members/utils";
 import { Task, TaskStatus } from "../types";
 import { createAdminClient } from "@/lib/appwrite";
 import { Project } from "@/features/projects/types";
-import { error } from "console";
-import { Description } from "@radix-ui/react-dialog";
 
 
 const app = new Hono()

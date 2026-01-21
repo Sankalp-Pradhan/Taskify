@@ -10,7 +10,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { handle } from "hono/vercel";
 
 export const useConfirm = (
     title: string,

@@ -49,7 +49,7 @@ export const JoinWorkspaceForm = ({
                     Join Workspace
                 </CardTitle>
                 <CardDescription>
-                    You've been invited to join <strong>{initialValues.name}</strong> worksapce
+                    You&aps;ove been invited to join <strong>{initialValues.name}</strong> worksapce
                 </CardDescription>
             </CardHeader>
             <div className="py-7">
