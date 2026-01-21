@@ -20,6 +20,7 @@ import { useCallback } from "react"
 import { TaskStatus } from "../types"
 import { useBulkUpdateTasks } from "../api/use-bulk-update-task"
 import { DataCalendar } from "./date-calendar"
+import { useProjectId } from "@/features/projects/hooks/use-project-id"
 
 interface TaskViewSwitcherProps {
     hideProjectFilter?: boolean;
@@ -33,7 +34,7 @@ export const TaskViewSwitcher = ({
     const [{
         status,
         assigneeId,
-        projectId: filterProjectId,
+        projectId,
         dueDate,
     }] = useTaskFilters();
 
@@ -45,11 +46,12 @@ export const TaskViewSwitcher = ({
     const { mutate: bulkUpdate } = useBulkUpdateTasks();
 
     const workspaceId = useWorkspaceId();
+    const paramProjectId = useProjectId();
     const { open } = useCreateTaskModal();
 
     const { data: tasks, isLoading: isLoadingTasks, error } = useGetTasks({
         workspaceId,
-        projectId: forcedProjectId || filterProjectId,
+        projectId: paramProjectId || projectId ,
         status,
         assigneeId,
         dueDate,
